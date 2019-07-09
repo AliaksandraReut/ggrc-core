@@ -64,19 +64,22 @@ class ExternalCADResource(common.Resource):
     resp = super(ExternalCADResource, self).build_collection_representation(
         *args, **kwargs
     )
-    col = resp.pop("external_custom_attribute_definitions_collection", {})
-    col["custom_attribute_definitions"] = col.pop(
-        "external_custom_attribute_definitions"
-    )
-    resp["custom_attribute_definitions_collection"] = col
+    if "external_custom_attribute_definitions_collection" in resp:
+      col = resp.pop("external_custom_attribute_definitions_collection", {})
+      if "external_custom_attribute_definitions" in col:
+        col["custom_attribute_definitions"] = col.pop(
+            "external_custom_attribute_definitions"
+        )
+      resp["custom_attribute_definitions_collection"] = col
     return resp
 
   def object_for_json(self, *args, **kwargs):
     """Mask external Custom attribute definitions for JSON response"""
     resp = super(ExternalCADResource, self).object_for_json(*args, **kwargs)
-    resp["custom_attribute_definition"] = resp.pop(
-        "external_custom_attribute_definition",
-        {}
-    )
+    if "external_custom_attribute_definition" in resp:
+      resp["custom_attribute_definition"] = resp.pop(
+          "external_custom_attribute_definition",
+          {}
+      )
     return resp
 

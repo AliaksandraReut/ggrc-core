@@ -35,20 +35,19 @@ def upgrade():
     sa.Column('modified_by_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('title', sa.String(length=250), nullable=False),
-    sa.ForeignKeyConstraint(['context_id'], ['contexts.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('definition_type', 'title', name='uq_custom_attribute'),
     sa.UniqueConstraint('external_id'),
-    sa.UniqueConstraint('title', name='uq_t_external_custom_attribute_definitions')
     )
+    op.create_index('ix_custom_attributes_title',
+                    'external_custom_attribute_definitions',
+                    ['title'],
+                    unique=False)
 
-    op.create_index('fk_external_custom_attribute_definitions_contexts', 'external_custom_attribute_definitions', ['context_id'], unique=False)
-    op.create_index('ix_custom_attributes_title', 'external_custom_attribute_definitions', ['title'], unique=False)
-    op.create_index('ix_external_custom_attribute_definitions_updated_at', 'external_custom_attribute_definitions', ['updated_at'], unique=False)
     op.create_table('external_custom_attribute_values',
     sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
     sa.Column('external_id', sa.Integer(), nullable=True),
-    sa.Column('custom_attribute_id', sa.Integer(), nullable=True),
+    sa.Column('custom_attribute_id', sa.Integer(), nullable=False),
     sa.Column('attributable_type', sa.String(length=250), nullable=True),
     sa.Column('attributable_id', sa.Integer(), nullable=True),
     sa.Column('attribute_value', sa.String(length=250), nullable=False),
@@ -56,14 +55,16 @@ def upgrade():
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('modified_by_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.ForeignKeyConstraint(['context_id'], ['contexts.id'], ),
     sa.ForeignKeyConstraint(['custom_attribute_id'], ['external_custom_attribute_definitions.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('attributable_id', 'custom_attribute_id'),
     sa.UniqueConstraint('external_id')
     )
-    op.create_index('fk_external_custom_attribute_values_contexts', 'external_custom_attribute_values', ['context_id'], unique=False)
-    op.create_index('ix_external_custom_attribute_values_updated_at', 'external_custom_attribute_values', ['updated_at'], unique=False)
+    op.create_index('ix_custom_attributes_attributable',
+                    'external_custom_attribute_values',
+                    ['attributable_id', 'attributable_type'],
+                    unique=False)
+
 
 
 def downgrade():

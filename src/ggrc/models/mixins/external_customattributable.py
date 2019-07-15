@@ -29,20 +29,20 @@ class ExternalCustomAttributable(CustomAttributableBase):
   def custom_attribute_definitions(cls):  # pylint: disable=no-self-argument
     """Load custom attribute definitions"""
     from ggrc.models.external_custom_attribute_definition\
-        import ExternalCustomAttributeDefinition
+        import ExternalCustomAttributeDefinition as ecad
 
     def join_function():
       """Object and CAD join function."""
-      definition_type = foreign(ExternalCustomAttributeDefinition.definition_type)
+      definition_type = foreign(ecad.definition_type)
+      # TODO Find better join condition that works
       return sa.and_(definition_type == cls._inflector.table_singular,
-                  sa.or_(cls.id != ExternalCustomAttributeDefinition.id,  #TODO FIND SOLUTION!!!!!!!
-                      cls.id == ExternalCustomAttributeDefinition.id))
+                     sa.or_(cls.id != ecad.id, cls.id == ecad.id))
 
     return relationship(
         "ExternalCustomAttributeDefinition",
         primaryjoin=join_function,
         backref='{0}_custom_attributable_definition'.format(cls.__name__),
-        order_by=ExternalCustomAttributeDefinition.id.asc(),
+        order_by=ecad.id.asc(),
         viewonly=True,
     )
 

@@ -23,6 +23,7 @@ def upgrade():
     """Upgrade database schema and/or data, creating a new revision."""
     op.create_table('external_custom_attribute_definitions',
     sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
+    sa.Column('internal_id', sa.Integer(), nullable=True),
     sa.Column('external_id', sa.Integer(), nullable=True),
     sa.Column('definition_type', sa.String(length=250), nullable=False),
     sa.Column('attribute_type', sa.String(length=250), nullable=False),
@@ -37,6 +38,7 @@ def upgrade():
     sa.Column('title', sa.String(length=250), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('definition_type', 'title', name='uq_custom_attribute'),
+    sa.UniqueConstraint('internal_id'),
     sa.UniqueConstraint('external_id'),
     )
     op.create_index('ix_custom_attributes_title',

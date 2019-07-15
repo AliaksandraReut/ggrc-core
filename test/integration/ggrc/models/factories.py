@@ -133,6 +133,39 @@ class CustomAttributeValueFactory(ModelFactory):
   attribute_object_id = None
 
 
+class ExternalCustomAttributeDefinitionFactory(TitledFactory):
+
+  class Meta:
+    model = all_models.ExternalCustomAttributeDefinition
+
+  definition_type = None
+  attribute_type = "Text"
+  multi_choice_options = None
+
+  @classmethod
+  def _generate_id(cls):
+    """Return next id"""
+    cls._latest_id = getattr(cls, "_latest_id", 0) + 1
+    return cls._latest_id
+
+  @classmethod
+  def _create(cls, target_class, *args, **kwargs):
+    """Assign id attribute since it is not autoincremental"""
+    return super(ExternalCustomAttributeDefinitionFactory, cls).\
+        _create(target_class, id=cls._generate_id(), *args, **kwargs)
+
+
+class ExternalCustomAttributeValueFactory(ModelFactory):
+
+  class Meta:
+    model = all_models.ExternalCustomAttributeValue
+
+  custom_attribute = None
+  attributable_id = None
+  attributable_type = None
+  attribute_value = None
+
+
 class DirectiveFactory(TitledFactory):
 
   class Meta:
